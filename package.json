@@ -1,0 +1,19 @@
+{
+  "name": "shopping_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dangductrung/ShoppingApp.git"
+  },
+  "author": "Trung Dang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dangductrung/ShoppingApp/issues"
+  },
+  "homepage": "https://github.com/dangductrung/ShoppingApp#readme"
+}
