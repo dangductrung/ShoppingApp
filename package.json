@@ -24,6 +24,7 @@
     "fs": "^0.0.1-security",
     "lodash": "^4.17.20",
     "morgan": "^1.10.0",
+    "phantom": "^6.3.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"
   }
