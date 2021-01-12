@@ -1,67 +1,85 @@
-const fs = require('fs')
-const cheerio = require('cheerio')
-const request = require('request-promise')
+const fs = require('fs');
+const cheerio = require('cheerio');
+const puppeteer = require('puppeteer');
 
+async function autoScroll(page) {
+    await page.evaluate(async() => {
+        await new Promise((resolve, reject) => {
+            var totalHeight = 0;
+            var distance = 100;
+            var timer = setInterval(() => {
+                var scrollHeight = document.body.scrollHeight;
+                window.scrollBy(0, distance);
+                totalHeight += distance;
 
-// function get page content
-const getPageContent = (uri) => {
-    const options = {
-        uri,
-        headers: {
-            'User-Agent': 'Request-Promise'
-        },
-        transform: (body) => {
-            return cheerio.load(body)
-        }
-    }
-
-    return request(options)
+                if (totalHeight >= scrollHeight) {
+                    clearInterval(timer);
+                    resolve();
+                }
+            }, 100);
+        });
+    });
 }
 
+// function get page content
+const getPageContent = async(uri) => {
+    console.log(uri);
+    const browser = await puppeteer.launch({
+        args: ['--start-fullscreen'],
+        defaultViewport: null,
+    });
+    const page = await browser.newPage();
+
+    await page.goto(uri, { waitUntil: 'networkidle2' });
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    await autoScroll(page);
+    const content = await page.evaluate(() => document.querySelector('*').outerHTML);
+
+    await browser.close();
+
+    return content;
+};
 // function get all link on page
 const getPageLink = (html) => {
-    const $ = cheerio.load(html)
-    var tags = $('a')
-    var links = []
+    const $ = cheerio.load(html);
+    var tags = $('a');
+    var links = [];
     $(tags).each((_index, link) => {
         links.push($(link).attr('href'));
     });
 
-    return links
-}
+    return links;
+};
 
 // function filter link beautiful
 const filterLink = (url_target, links) => {
     links.forEach((link, _index) => {
 
-        // Function remove item has value "xyz"
         if (link == undefined ||
-            link == "./" ||
-            link == "/" ||
             link == "javascript:void(0)" ||
             link.includes("login") ||
             link.includes("logout") ||
             link.includes("register")) {
-            delete links[_index]
-            return
+            delete links[_index];
+            return;
         }
 
-        // Function regex value http https www http://www https://www
         var _regex = new RegExp("https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,}")
 
         if (!_regex.test(link)) {
-            links[_index] = url_target + link
+            links[_index] = url_target + link;
         }
 
-        return
+        return;
     });
 
     var links = links.filter(function(link) {
         return link != null;
     });
 
-    return links
-}
+    return links;
+};
 
 
 const exportFile = (file_export, data) => {
@@ -71,6 +89,6 @@ const exportFile = (file_export, data) => {
         }
         console.log("The file was saved!");
     });
-}
+};
 
 module.exports = { exportFile, getPageContent, getPageLink, filterLink }
