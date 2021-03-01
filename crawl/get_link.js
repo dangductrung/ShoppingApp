@@ -23,19 +23,19 @@ async function autoScroll(page) {
 
 // function get page content
 const getPageContent = async(uri) => {
-    console.log(uri);
     const browser = await puppeteer.launch({
-        args: ['--start-fullscreen'],
+        args: ['--start-fullscreen', '--enable-blink-features=HTMLImports'],
         defaultViewport: null,
     });
     const page = await browser.newPage();
 
+
     await page.goto(uri, { waitUntil: 'networkidle2' });
+
     await new Promise(resolve => setTimeout(resolve, 3000));
 
     await autoScroll(page);
     const content = await page.evaluate(() => document.querySelector('*').outerHTML);
-
     await browser.close();
 
     return content;
