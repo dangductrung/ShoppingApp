@@ -1,12 +1,14 @@
 const fs = require('fs');
 const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
+const isExist = require('../func/is_exist');
+const crawledLink = require('../model/crawled');
 
 async function autoScroll(page) {
     await page.evaluate(async() => {
         await new Promise((resolve, reject) => {
             var totalHeight = 0;
-            var distance = 100;
+            var distance = 300;
             var timer = setInterval(() => {
                 var scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
@@ -22,23 +24,52 @@ async function autoScroll(page) {
 }
 
 // function get page content
-const getPageContent = async(uri) => {
-    const browser = await puppeteer.launch({
-        args: ['--start-fullscreen', '--enable-blink-features=HTMLImports'],
-        defaultViewport: null,
-    });
-    const page = await browser.newPage();
+const getPageContent = async(uri, type) => {
+    if(uri == undefined || uri == "undefined" ) {
+        return null
+    }
 
+    let link = await crawledLink.findOne(
+        {
+            where: {
+                link: uri,
+                source: type
+            }
+        }
+    );
 
-    await page.goto(uri, { waitUntil: 'networkidle2' });
+    if(link instanceof crawledLink) {
+        return null;
+    }
 
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    console.log("Crawl: ", uri);
 
-    await autoScroll(page);
-    const content = await page.evaluate(() => document.querySelector('*').outerHTML);
-    await browser.close();
+    try {
+        const browser = await puppeteer.launch({
+            args: ['--start-fullscreen', '--enable-blink-features=HTMLImports', '--no-sandbox', '--disable-setuid-sandbox'],
+            defaultViewport: null,
+        });
+    
+        const page = await browser.newPage();
+    
+    
+        await page.goto(uri, { waitUntil: 'networkidle2' });
+    
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    
+        await autoScroll(page);
+        const content = await page.evaluate(() => document.querySelector('*').outerHTML);
+        await browser.close();
+        await crawledLink.create({
+            link: uri,
+            source: type
+        });
+        return content;
+    } catch(e) {
+        console.log("Puppeteer error: " , e);
+    }
+    return null;
 
-    return content;
 };
 // function get all link on page
 const getPageLink = (html) => {
@@ -53,37 +84,46 @@ const getPageLink = (html) => {
 };
 
 // function filter link beautiful
-const filterLink = (url_target, links) => {
+const filterLink = (base_url, links, type) => {
     links.forEach((link, _index) => {
-
-        if (link == undefined ||
+        if (link == undefined || link == "undefined" ||
             link == "javascript:void(0)" ||
-            link.includes("login") ||
-            link.includes("logout") ||
+            link.includes("login") || link.includes(":") || link.includes("#") ||
+            link.includes("=") || link.includes("cart") ||
+            link.includes("logout") || link == null ||
             link.includes("register")) {
             delete links[_index];
             return;
         }
 
-        var _regex = new RegExp("https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,}")
+        let countDoubleSplash = link.split('//').length;
+        if(countDoubleSplash > 1) {
+            delete links[_index];
+        }
+
+        var _regex = new RegExp("https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,}|\/$/g")
 
         if (!_regex.test(link)) {
-            links[_index] = url_target + link;
+            links[_index] = base_url + link;
+        } else {
+            delete links[_index];
         }
 
         return;
     });
 
-    var links = links.filter(function(link) {
-        return link != null;
-    });
+    links = links.filter(function(elem, pos) {
+        return links.indexOf(elem) == pos;
+    })
+
+    exportFile('data.json', links);
 
     return links;
 };
 
 
 const exportFile = (file_export, data) => {
-    fs.writeFile(file_export, data, function(err) {
+    fs.writeFileSync(file_export, data, function(err) {
         if (err) {
             return console.log(err);
         }
