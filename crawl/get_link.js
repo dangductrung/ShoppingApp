@@ -89,16 +89,12 @@ const filterLink = (base_url, links, type) => {
         if (link == undefined || link == "undefined" ||
             link == "javascript:void(0)" ||
             link.includes("login") || link.includes(":") || link.includes("#") ||
-            link.includes("=") || link.includes("cart") ||
+            link.includes("=") || link.includes("cart") || link.includes("about") || 
+            link.includes("notification") || link.includes("searchbox") || link.includes("//") ||
             link.includes("logout") || link == null ||
             link.includes("register")) {
             delete links[_index];
             return;
-        }
-
-        let countDoubleSplash = link.split('//').length;
-        if(countDoubleSplash > 1) {
-            delete links[_index];
         }
 
         var _regex = new RegExp("https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,}|\/$/g")
