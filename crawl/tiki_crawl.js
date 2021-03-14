@@ -1,16 +1,11 @@
 const crawler = require('./crawl');
-const crawledLink = require('../model/crawled');
 const tiki_target = "https://tiki.vn";
 const tiki_base_url = "https://tiki.vn";
+const fs = require('fs');
 
-const tiki_crawl =  () => {
-    crawledLink.destroy(
-        {  where: {
-            source: "tiki"
-        },
-        truncate: true
-      }).then(async function(affected) {
-         crawler.crawl(tiki_base_url,tiki_target, "tiki")
+const tiki_crawl = async  () => {
+    fs.truncate(__dirname + "/links/" + 'tiki.txt', 0,async function(){
+         await crawler.crawl(tiki_base_url,tiki_target, "tiki")
     });
 }
 

@@ -7,35 +7,24 @@ var Product = require("../../model/product");
 const getProductInfo = async (html, link) => {
     const $ =  cheerio.load(html);
 
-    const productName = $('div._3ZV7fL > span').text();
-    const productPrice = $('div.AJyN7v').text();
-    const beforePrice = $('div.bBOoii').text();
-    const discount = $('div._3ghar9').text();
-    const trademark = $('div._2gVYdB > a._3yEY86').text();
+    const productName = $('div.attM6y > span').text();
+    const productPrice = $('div._3e_UQT').text();
+    const trademark = $('div.aPKXeO > a._3Qy6bH').text();
 
 
     if(string_helper.isEmpty(productPrice)) {
         return;
-    }
-    if(beforePrice === null || beforePrice === "undefined") {
-        beforePrice = 0;
-    }
-
-    if(discount === null || discount === "undefined") {
-        discount = 0;
     }
 
     if(!(await isExist.isExist(link))) {
         const object = {
             name: productName,
             current_price: productPrice.match(/\d/g).join(''),
-            before_price: beforePrice.match(/\d/g).join(''),
-            discount: discount.match(/\d/g).join(''),
             brand: trademark,
             link: link,
             from: "shopee"
         };
-        await saveProduct.saveProduct(object.name, object.current_price, object.before_price, object.discount, object.brand, object.link, object.from );
+        await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
         return;
     } else {
         let product = await Product.findOne({
@@ -43,18 +32,15 @@ const getProductInfo = async (html, link) => {
                 link: link
             },
         });
-    
         if('' + product.current_price !== productPrice.match(/\d/g).join('')) {
             const object = {
                 name: productName,
                 current_price: productPrice.match(/\d/g).join(''),
-                before_price: beforePrice.match(/\d/g).join(''),
-                discount: discount.match(/\d/g).join(''),
                 brand: trademark,
                 link: link,
                 from: "shopee"
             };
-            await saveProduct.saveProduct(object.name, object.current_price, object.before_price, object.discount, object.brand, object.link, object.from );
+            await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
         }
         return;
     }

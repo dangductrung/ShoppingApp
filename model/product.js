@@ -14,9 +14,7 @@ var Product = sequilize.define('products', {
     link: DataTypes.STRING(255) ,
     match_id: DataTypes.INTEGER ,
     created_at: DataTypes.DATE ,
-    current_price: DataTypes.FLOAT,
-    before_price: DataTypes.FLOAT,
-    discount: DataTypes.FLOAT
+    current_price: DataTypes.FLOAT
 },  {timestamps: false,});
 
 

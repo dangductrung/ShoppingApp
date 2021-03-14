@@ -10,8 +10,6 @@ const getProductInfo = async (html, link) => {
     const productName = $('h1.title').text();
     const productPrice = $('span.product-price__current-price').text();
     const flashSalePrice = $('div.flash-sale-price > span').text();
-    const beforePrice = $('span.product-price__list-price').text();
-    const discount = $('span.product-price__discount-rate').text();
 
     let trademark = '';
     $('tr').map((i, element) => {
@@ -27,25 +25,15 @@ const getProductInfo = async (html, link) => {
         return;
     }
 
-    if(beforePrice === null || beforePrice === "undefined") {
-        beforePrice = 0;
-    }
-
-    if(discount === null || discount === "undefined") {
-        discount = 0;
-    }
-
     if(!(await isExist.isExist(link))) {
         const object = {
             name: productName,
             current_price: currentPrice.match(/\d/g).join(''),
-            before_price: beforePrice.match(/\d/g).join(''),
-            discount: discount.match(/\d/g).join(''),
             brand: trademark,
             link: link,
             from: "tiki"
         };
-        await saveProduct.saveProduct(object.name, object.current_price, object.before_price, object.discount, object.brand, object.link, object.from );
+        await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
 
         
     } else {
@@ -59,13 +47,11 @@ const getProductInfo = async (html, link) => {
             const object = {
                 name: productName,
                 current_price: currentPrice.match(/\d/g).join(''),
-                before_price: beforePrice.match(/\d/g).join(''),
-                discount: discount.match(/\d/g).join(''),
                 brand: trademark,
                 link: link,
                 from: "tiki"
             };
-            await saveProduct.saveProduct(object.name, object.current_price, object.before_price, object.discount, object.brand, object.link, object.from );
+            await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
         }
     }
 };

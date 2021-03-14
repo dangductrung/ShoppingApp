@@ -1,16 +1,11 @@
 const crawler = require('./crawl');
-const crawledLink = require('../model/crawled');
 const lazada_target = "https://lazada.vn";
 const lazada_base_url = "https://lazada.vn";
+const fs = require('fs');
 
-const lazada_crawl =  () => {
-    crawledLink.destroy(
-        {  where: {
-            source: "lazada"
-        },
-        truncate: true
-      }).then(async function(affected) {
-          crawler.crawl(lazada_base_url,lazada_target, "lazada")
+const lazada_crawl = async () => {
+    fs.truncate(__dirname + "/links/" + 'lazada.txt', 0,async function(){
+         await crawler.crawl(lazada_base_url,lazada_target, "lazada")
     });
 }
 

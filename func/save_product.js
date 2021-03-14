@@ -1,7 +1,8 @@
 var Product = require("../model/product.js");
 const string_helper = require('../helper/string_helper');
 
- const saveProduct = async (name,current_price,before_price, discount,brand,link,from ) => {
+ const saveProduct = async (name,current_price,brand,link,from ) => {
+
     var dateNow = new Date()
     .toLocaleString("sv", { timeZone: "Asia/Ho_Chi_Minh" })
     .slice(0, 19)
@@ -18,8 +19,6 @@ const string_helper = require('../helper/string_helper');
         from: from,
         link: link,
         current_price: current_price,
-        before_price: before_price,
-        discount: discount,
         created_at: dateNow
     });
 };

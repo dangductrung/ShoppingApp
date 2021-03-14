@@ -1,8 +1,11 @@
-const fs = require('fs');
 const cheerio = require('cheerio');
-const puppeteer = require('puppeteer');
-const isExist = require('../func/is_exist');
-const crawledLink = require('../model/crawled');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
+const fs = require('fs');
+
+puppeteer.use(RecaptchaPlugin()).use(StealthPlugin())
+process.setMaxListeners(Infinity);
 
 async function autoScroll(page) {
     await page.evaluate(async() => {
@@ -29,16 +32,7 @@ const getPageContent = async(uri, type) => {
         return null
     }
 
-    let link = await crawledLink.findOne(
-        {
-            where: {
-                link: uri,
-                source: type
-            }
-        }
-    );
-
-    if(link instanceof crawledLink) {
+    if( await isLinkCrawled(type + ".txt", uri)) {
         return null;
     }
 
@@ -46,24 +40,27 @@ const getPageContent = async(uri, type) => {
 
     try {
         const browser = await puppeteer.launch({
-            args: ['--start-fullscreen', '--enable-blink-features=HTMLImports', '--no-sandbox', '--disable-setuid-sandbox'],
+            // headless: false,
+            args: ['--start-fullscreen', '--enable-blink-features=HTMLImports', '--no-sandbox', '--disable-setuid-sandbox', "--memory=1024MB"],
             defaultViewport: null,
+            read_timeout: 30000,
+            handleSIGINT : false,
         });
     
         const page = await browser.newPage();
     
-    
-        await page.goto(uri, { waitUntil: 'networkidle2' });
+        await page.goto(uri, { waitUntil: 'networkidle0' , timeout: 0});
     
         await new Promise(resolve => setTimeout(resolve, 3000));
     
         await autoScroll(page);
         const content = await page.evaluate(() => document.querySelector('*').outerHTML);
         await browser.close();
-        await crawledLink.create({
-            link: uri,
-            source: type
-        });
+
+
+        await exportFile(type + ".txt", uri);
+
+
         return content;
     } catch(e) {
         console.log("Puppeteer error: " , e);
@@ -89,8 +86,8 @@ const filterLink = (base_url, links, type) => {
         if (link == undefined || link == "undefined" ||
             link == "javascript:void(0)" ||
             link.includes("login") || link.includes(":") || link.includes("#") ||
-            link.includes("=") || link.includes("cart") || link.includes("about") || 
-            link.includes("notification") || link.includes("searchbox") || link.includes("//") ||
+            link.includes("cart") || link.includes("about") || link.includes("//") || 
+            link.includes("notification") || link.includes("searchbox") || 
             link.includes("logout") || link == null ||
             link.includes("register")) {
             delete links[_index];
@@ -112,19 +109,20 @@ const filterLink = (base_url, links, type) => {
         return links.indexOf(elem) == pos;
     })
 
-    exportFile('data.json', links);
-
     return links;
 };
 
-
-const exportFile = (file_export, data) => {
-    fs.writeFileSync(file_export, data, function(err) {
-        if (err) {
-            return console.log(err);
-        }
-        console.log("The file was saved!");
-    });
+const exportFile = async (file_export, data) => {
+    fs.appendFileSync( __dirname + "/links/" +  file_export, "," + data);
+    console.log('Saved: ' ,data);
 };
 
-module.exports = { exportFile, getPageContent, getPageLink, filterLink }
+const isLinkCrawled = async (file_export, searchString) => {
+    let data = fs.readFileSync( __dirname + "/links/" + file_export);
+    if(data.indexOf(searchString) >= 0) {
+        return true;
+    }
+    return false;
+};
+
+module.exports = { getPageContent, getPageLink, filterLink }
