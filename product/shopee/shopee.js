@@ -8,10 +8,9 @@ const getProductInfo = async (html, link) => {
     const $ =  cheerio.load(html);
 
     const productName = $('div.attM6y > span').text();
-    const productPrice = $('div._3e_UQT').text();
+    let productPrice = $('div._3e_UQT').text();
     const trademark = $('div.aPKXeO > a._3Qy6bH').text();
-
-
+    productPrice = productPrice.split('-')[0]
     if(string_helper.isEmpty(productPrice)) {
         return;
     }

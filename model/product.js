@@ -15,7 +15,10 @@ var Product = sequilize.define('products', {
     match_id: DataTypes.INTEGER ,
     created_at: DataTypes.DATE ,
     current_price: DataTypes.FLOAT
-},  {timestamps: false,});
+},  {
+    charset: 'utf8mb4',
+    timestamps: false,
+});
 
 
 module.exports = Product;

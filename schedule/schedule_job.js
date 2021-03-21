@@ -15,9 +15,10 @@ const crawl = async () => {
       }
       
     // const rule = new schedule.RecurrenceRule();
-    // rule.dayOfWeek = 3;
-    // rule.hour = 3;
-    // rule.minute = 53;
+    // Sunday &  Wednesday
+    // rule.dayOfWeek = [0, 3];
+    // rule.hour = 0;
+    // rule.minute = 0;
 
     // const job = schedule.scheduleJob(rule,async function(){
     //     try {

@@ -12,15 +12,18 @@ const string_helper = require('../helper/string_helper');
         return;
     }
 
-
-    await Product.create({
-        name: name,
-        brand: brand,
-        from: from,
-        link: link,
-        current_price: current_price,
-        created_at: dateNow
-    });
+    try {
+        await Product.create({
+            name: name,
+            brand: brand,
+            from: from,
+            link: link,
+            current_price: current_price,
+            created_at: dateNow
+        });
+    } catch(e) {
+        console.log(e);
+    }
 };
 
 module.exports = { saveProduct }

@@ -12,7 +12,6 @@ const crawl = async (base_url ,url, type) => {
 
     links_filted = crawler.filterLink(base_url, links, type);
 
-
     for(i = 0; i<links.length; ++i) {
             switch(type) {
                 case "shopee": 
@@ -28,7 +27,5 @@ const crawl = async (base_url ,url, type) => {
         await crawl(base_url, links[i], type);
     }
 }
-
-
 
 module.exports = { crawl }

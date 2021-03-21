@@ -11,7 +11,7 @@ async function autoScroll(page) {
     await page.evaluate(async() => {
         await new Promise((resolve, reject) => {
             var totalHeight = 0;
-            var distance = 300;
+            var distance = 400;
             var timer = setInterval(() => {
                 var scrollHeight = document.body.scrollHeight;
                 window.scrollBy(0, distance);
@@ -46,8 +46,10 @@ const getPageContent = async(uri, type) => {
             read_timeout: 30000,
             handleSIGINT : false,
         });
-    
+
         const page = await browser.newPage();
+
+        await page.setDefaultNavigationTimeout(0);
     
         await page.goto(uri, { waitUntil: 'networkidle0' , timeout: 0});
     
@@ -56,7 +58,6 @@ const getPageContent = async(uri, type) => {
         await autoScroll(page);
         const content = await page.evaluate(() => document.querySelector('*').outerHTML);
         await browser.close();
-
 
         await exportFile(type + ".txt", uri);
 
