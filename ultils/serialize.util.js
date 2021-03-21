@@ -1,6 +1,6 @@
 var seq = require('sequelize');
 
-var sequelize = new seq('shopping', 'root', 'ductrung@@113', {
+var sequelize = new seq('shopping', 'root', 'Dangductrung@@123Th', {
     host: 'localhost',
     dialect: 'mysql',
     pool: {

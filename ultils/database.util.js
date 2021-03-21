@@ -3,11 +3,11 @@ const util = require('util');
 
 const pool = mysql.createPool({
     connectionLimit: 100,
-    host: 'us-cdbr-east-02.cleardb.com',
+    host: 'localhost',
     port: 3306,
-    user: 'bf429f27095475',
-    password: '56349a0e',
-    database: 'heroku_6dd61aff90cf7bc',
+    user: 'root',
+    password: 'Dangductrung@@123Th',
+    database: 'shopping',
     insecureAuth: true
 });
 
