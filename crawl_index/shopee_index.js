@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const bodyParser = require('body-parser');
-const schedule = require('../schedule/lazada_schedule');
+const schedule = require('../schedule/shopee_schedule');
 
 require('events').EventEmitter.prototype._maxListeners = 100;
 
@@ -10,12 +10,8 @@ const enviromentName = "dev"
 app.use(morgan(enviromentName));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-const port = process.env.PORT || 5001
-
-app.use('/crawl', require('./routes/crawl'));
-
-
-var server=app.listen(4001, function(){
+ 
+var server=app.listen(4002, function(){
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
   });
   schedule.crawl();
