@@ -41,7 +41,16 @@ const getPageContent = async(uri, type) => {
     try {
         const browser = await puppeteer.launch({
             // headless: false,
-            args: ['--start-fullscreen', '--enable-blink-features=HTMLImports', '--no-sandbox', '--disable-setuid-sandbox', "--memory=1024MB"],
+            ignoreHTTPSErrors: true,
+            args: ['--start-fullscreen', 
+            '--enable-blink-features=HTMLImports', 
+            '--no-sandbox', 
+            '--disable-setuid-sandbox', 
+            "--memory=1024MB", 
+            '--unlimited-storage', 
+            '--full-memory-crash-report',
+            '--disable-dev-shm-usage',
+            '--disable-gpu'],
             defaultViewport: null,
             read_timeout: 30000,
             handleSIGINT : false,
