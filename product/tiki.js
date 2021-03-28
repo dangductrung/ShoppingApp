@@ -1,8 +1,8 @@
 const cheerio = require('cheerio');
-const string_helper = require('../../helper/string_helper');
-const isExist = require('../../func/is_exist');
-const saveProduct = require('../../func/save_product');
-var Product = require("../../model/product");
+const string_helper = require('../helper/string_helper');
+const isExist = require('../func/is_exist');
+const saveProduct = require('../func/save_product');
+var Product = require("../model/product");
 
 const getProductInfo = async (html, link) => {
     const $ = cheerio.load(html);
@@ -34,25 +34,27 @@ const getProductInfo = async (html, link) => {
             from: "tiki"
         };
         await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
-
-        
     } else {
-        let product = await Product.findOne({
+        await Product.findAll({
+            limit: 1,
             where: { 
                 link: link
             },
+            order: [ [ 'created_at', 'DESC' ]]
+        }).then(async function(entities) {
+            if(entities.length > 0) {
+                if('' + entities[0].current_price !==  productPrice.match(/\d/g).join('')) {
+                    const object = {
+                        name: productName,
+                        current_price: productPrice.match(/\d/g).join(''),
+                        brand: trademark,
+                        link: link,
+                        from: "tiki"
+                    };
+                    await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
+                }
+            }
         });
-
-        if('' + product.current_price !==  productPrice.match(/\d/g).join('')) {
-            const object = {
-                name: productName,
-                current_price: currentPrice.match(/\d/g).join(''),
-                brand: trademark,
-                link: link,
-                from: "tiki"
-            };
-            await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
-        }
     }
 };
 

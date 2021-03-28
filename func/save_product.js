@@ -3,6 +3,8 @@ const string_helper = require('../helper/string_helper');
 
  const saveProduct = async (name,current_price,brand,link,from ) => {
 
+    console.log(name,current_price,brand,link,from );
+
     var dateNow = new Date()
     .toLocaleString("sv", { timeZone: "Asia/Ho_Chi_Minh" })
     .slice(0, 19)

@@ -7,6 +7,7 @@ const fs = require('fs');
 puppeteer.use(RecaptchaPlugin()).use(StealthPlugin())
 process.setMaxListeners(Infinity);
 
+
 async function autoScroll(page) {
     await page.evaluate(async() => {
         await new Promise((resolve, reject) => {
@@ -37,24 +38,26 @@ const getPageContent = async(uri, type) => {
     }
 
     console.log("Crawl: ", uri);
+    const browser = await puppeteer.launch({
+        // headless: false,
+        ignoreHTTPSErrors: true,
+        args: ['--start-fullscreen', 
+        '--enable-blink-features=HTMLImports', 
+        '--no-sandbox', 
+        '--disable-setuid-sandbox', 
+        "--memory=1024MB", 
+        '--unlimited-storage', 
+        '--full-memory-crash-report',
+        '--disable-dev-shm-usage',
+        '--disable-gpu'],
+        defaultViewport: null,
+        read_timeout: 60000,
+        handleSIGINT : false,
+        timeout: 0,
+        userDataDir: '${__dirname}/profile-dir'
+    });
 
     try {
-        const browser = await puppeteer.launch({
-            // headless: false,
-            ignoreHTTPSErrors: true,
-            args: ['--start-fullscreen', 
-            '--enable-blink-features=HTMLImports', 
-            '--no-sandbox', 
-            '--disable-setuid-sandbox', 
-            "--memory=1024MB", 
-            '--unlimited-storage', 
-            '--full-memory-crash-report',
-            '--disable-dev-shm-usage',
-            '--disable-gpu'],
-            defaultViewport: null,
-            read_timeout: 30000,
-            handleSIGINT : false,
-        });
 
         const page = await browser.newPage();
 
@@ -62,7 +65,12 @@ const getPageContent = async(uri, type) => {
     
         await page.goto(uri, { waitUntil: 'networkidle0' , timeout: 0});
     
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        page.on('dialog', async dialog => {
+            console.log(dialog.message());
+            await dialog.dismiss();
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 10000));
     
         await autoScroll(page);
         const content = await page.evaluate(() => document.querySelector('*').outerHTML);
@@ -70,10 +78,11 @@ const getPageContent = async(uri, type) => {
 
         await exportFile(type + ".txt", uri);
 
-
         return content;
     } catch(e) {
         console.log("Puppeteer error: " , e);
+        await browser.close();
+        getPageContent(uri, type);
     }
     return null;
 
@@ -98,7 +107,7 @@ const filterLink = (base_url, links, type) => {
             link.includes("login") || link.includes(":") || link.includes("#") ||
             link.includes("cart") || link.includes("about") || link.includes("//") || 
             link.includes("notification") || link.includes("searchbox") || 
-            link.includes("logout") || link == null ||
+            link.includes("logout") || link == null || link.includes("?src=header_tiki") ||
             link.includes("register")) {
             delete links[_index];
             return;
@@ -109,6 +118,10 @@ const filterLink = (base_url, links, type) => {
         if (!_regex.test(link)) {
             links[_index] = base_url + link;
         } else {
+            delete links[_index];
+        }
+
+        if(link.split('/').length > 2) {
             delete links[_index];
         }
 
