@@ -3,6 +3,9 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
 const fs = require('fs');
+const shopee = require('../product/shopee');
+const tiki = require('../product/tiki');
+const lazada = require('../product/lazada');
 
 puppeteer.use(RecaptchaPlugin()).use(StealthPlugin())
 process.setMaxListeners(Infinity);
@@ -75,10 +78,21 @@ const getPageContent = async(uri, type) => {
         await autoScroll(page);
         const content = await page.evaluate(() => document.querySelector('*').outerHTML);
         await browser.close();
-
         await exportFile(type + ".txt", uri);
 
+        switch(type) {
+            case "shopee": 
+                await shopee.getProductInfo(content, uri);
+                break;
+            case "lazada": 
+                await lazada.getProductInfo(content, uri);
+                break;
+            case "tiki": 
+                await tiki.getProductInfo(content, uri);
+                break;
+        }
         return content;
+        
     } catch(e) {
         console.log("Puppeteer error: " , e);
         await browser.close();
@@ -101,13 +115,14 @@ const getPageLink = (html) => {
 
 // function filter link beautiful
 const filterLink = (base_url, links, type) => {
+
     links.forEach((link, _index) => {
         if (link == undefined || link == "undefined" ||
             link == "javascript:void(0)" ||
             link.includes("login") || link.includes(":") || link.includes("#") ||
-            link.includes("cart") || link.includes("about") || link.includes("//") || 
+            link.includes("cart") || link.includes("about") || 
             link.includes("notification") || link.includes("searchbox") || 
-            link.includes("logout") || link == null || link.includes("?src=header_tiki") ||
+            link.includes("logout") || link == null || 
             link.includes("register")) {
             delete links[_index];
             return;
@@ -118,10 +133,6 @@ const filterLink = (base_url, links, type) => {
         if (!_regex.test(link)) {
             links[_index] = base_url + link;
         } else {
-            delete links[_index];
-        }
-
-        if(link.split('/').length > 2) {
             delete links[_index];
         }
 
