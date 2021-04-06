@@ -1,5 +1,5 @@
 const crawler = require('./crawl');
-const tiki_target = "https://tiki.vn/youtheory-collagen-advanced-formula-tablets-390-ct-p53158147.html?spid=53158149";
+const tiki_target = "https://tiki.vn";
 const tiki_base_url = "https://tiki.vn";
 const fs = require('fs');
 

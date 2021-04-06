@@ -1,12 +1,11 @@
-var Product = require("../model/product.js");
+ var Product = require("../model/product.js");
 const string_helper = require('../helper/string_helper');
+const dateFormat = require('dateformat');
 
  const saveProduct = async (name,current_price,brand,link,from ) => {
 
     var dateNow = new Date()
-    .toLocaleString("sv", { timeZone: "Asia/Ho_Chi_Minh" })
-    .slice(0, 19)
-    .replace("T", " ");
+    .toLocaleString("sv", { timeZone: "Asia/Ho_Chi_Minh" });
     try {
         await Product.create({
             name: name,
@@ -14,7 +13,7 @@ const string_helper = require('../helper/string_helper');
             from: from,
             link: link,
             current_price: current_price,
-            created_at: dateNow
+            created_at: dateFormat(dateNow, 'yyyy-mm-dd HH:MM:ss')
         });
     } catch(e) {
         console.log(e);

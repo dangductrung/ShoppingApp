@@ -22,7 +22,10 @@ const getProductInfo = async (html, link) => {
                 link: link,
                 from: "shopee"
             };
-            await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
+            saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from).then(async () => {
+                const crawler = require('../crawl/get_link');
+                await crawler.crawlnext(shopee_base_url, html, 'shopee');
+            });
             return;
         } else {
             await Product.findAll({
@@ -41,26 +44,19 @@ const getProductInfo = async (html, link) => {
                             link: link,
                             from: "shopee"
                         };
-                        await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
+                        saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from).then(async () => {
+                            const crawler = require('../crawl/get_link');
+                            await crawler.crawlnext(shopee_base_url, html, 'shopee');
+                        });
+                        return;
                     }
                 }
             });
         }
-    }
-    crawlnext(shopee_base_url, html, 'shopee');
-};
-
-const crawlnext = (base_url, html, type) => {
-    const crawl = require('../crawl/crawl');
-    const crawler = require('../crawl/get_link');
-
-    if(html == null) {
-        return;
-    }
-    var links = crawler.getPageLink(html);
-    links_filted = crawler.filterLink(base_url, links, type);
-    for(i = 0; i<links_filted.length; ++i) {
-        crawl.crawl(base_url, links_filted[i], type);
+    } else {
+        const crawler = require('../crawl/get_link');
+        await crawler.crawlnext(shopee_base_url, html, 'shopee');
     }
 };
+
 module.exports = { getProductInfo }

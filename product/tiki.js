@@ -32,7 +32,11 @@ const getProductInfo = async (html, link) => {
                 link: link,
                 from: "tiki"
             };
-            await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
+            saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from ).then(async () => {
+                const crawler = require('../crawl/get_link');
+                await crawler.crawlnext(tiki_base_url, html, 'tiki');
+            });
+            return;
 
         } else {
             await Product.findAll({
@@ -51,27 +55,18 @@ const getProductInfo = async (html, link) => {
                             link: link,
                             from: "tiki"
                         };
-                        await saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from );
+                        saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from ).then(async () => {
+                            const crawler = require('../crawl/get_link');
+                            await crawler.crawlnext(tiki_base_url, html, 'tiki');
+                        });
+                        return;
                     }
                 }
             });
         }
-    }
-    await crawlnext(tiki_base_url, html, 'tiki');
-};
-
-const crawlnext = async (base_url, html, type) => {
-    const crawl = require('../crawl/crawl');
-    const crawler = require('../crawl/get_link');
-
-    if(html == null) {
-        return;
-    }
-    var links = crawler.getPageLink(html);
-    links_filted = crawler.filterLink(base_url, links, type);
-    for(i = 0; i<links_filted.length; ++i) {
-        await new Promise(resolve => setTimeout(resolve, 5000));
-     crawl.crawl(base_url, links_filted[i], type);
+    } else {
+        const crawler = require('../crawl/get_link');
+        await crawler.crawlnext(tiki_base_url, html, 'tiki');
     }
 };
 
