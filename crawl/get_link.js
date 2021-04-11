@@ -7,6 +7,7 @@ const shopee = require('../product/shopee');
 const tiki = require('../product/tiki');
 const lazada = require('../product/lazada');
 const isExist = require('../func/is_exist');
+var shell = require('shelljs');
 
 puppeteer.use(RecaptchaPlugin()).use(StealthPlugin())
 process.setMaxListeners(Infinity);
@@ -118,7 +119,8 @@ const openBrowser = async (type, link) => {
         await solveContent(content, type, link);
     }catch(err) {
         console.log("Puppeteer error: " , err);
-        await browser.close();
+        shell.exec('pkill Chromium');
+        await openBrowser(type, link);
     }finally {
         await browser.close();
     }
