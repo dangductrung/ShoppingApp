@@ -12,7 +12,21 @@ const getProductInfo = async (html, link) => {
     const productName = $('div.attM6y > span').text();
     let productPrice = $('div._3e_UQT').text();
     const trademark = $('div.aPKXeO > a._3Qy6bH').text();
-    productPrice = productPrice.split('-')[0]
+    productPrice = productPrice.split('-')[0];
+    let imageLink = "";
+    $('div._1cILQR').map((i, element) => {
+        if (!$(element).html().includes('svg') && imageLink === "") {
+            imageLink = $(element).html();
+        }
+    });
+
+    const firstIndex = imageLink.indexOf("&quot;");
+    const lastIndex = imageLink.lastIndexOf("&quot;");
+    imageLink = imageLink.substring(
+        firstIndex + 6, 
+        lastIndex
+    );
+    
     if(!string_helper.isEmpty(productPrice)) {
         if(!(await isExist.isExist(link))) {
             const object = {
@@ -20,9 +34,10 @@ const getProductInfo = async (html, link) => {
                 current_price: productPrice.match(/\d/g).join(''),
                 brand: trademark,
                 link: link,
-                from: "shopee"
+                from: "shopee",
+                image: imageLink
             };
-            saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from).then(async () => {
+            saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
                 const crawler = require('../crawl/get_link');
                 await crawler.crawlnext(shopee_base_url, html, 'shopee');
             });
@@ -42,9 +57,10 @@ const getProductInfo = async (html, link) => {
                             current_price: productPrice.match(/\d/g).join(''),
                             brand: trademark,
                             link: link,
-                            from: "shopee"
+                            from: "shopee",
+                            image: imageLink
                         };
-                        saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from).then(async () => {
+                        saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
                             const crawler = require('../crawl/get_link');
                             await crawler.crawlnext(shopee_base_url, html, 'shopee');
                         });

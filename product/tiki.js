@@ -21,7 +21,7 @@ const getProductInfo = async (html, link) => {
     });
 
     const currentPrice = !string_helper.isEmpty(productPrice) ? productPrice : flashSalePrice;
-
+    const imageLink = $('div.PictureV2__StyledWrapImage-tfuu67-0 > img').attr('src');
 
     if(!string_helper.isEmpty(currentPrice)) {
         if(!(await isExist.isExist(link))) {
@@ -30,9 +30,10 @@ const getProductInfo = async (html, link) => {
                 current_price: currentPrice.match(/\d/g).join(''),
                 brand: trademark,
                 link: link,
-                from: "tiki"
+                from: "tiki",
+                image: imageLink
             };
-            saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from ).then(async () => {
+            saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
                 const crawler = require('../crawl/get_link');
                 await crawler.crawlnext(tiki_base_url, html, 'tiki');
             });
@@ -53,9 +54,10 @@ const getProductInfo = async (html, link) => {
                             current_price: productPrice.match(/\d/g).join(''),
                             brand: trademark,
                             link: link,
-                            from: "tiki"
+                            from: "tiki",
+                            image: imageLink
                         };
-                        saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from ).then(async () => {
+                        saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
                             const crawler = require('../crawl/get_link');
                             await crawler.crawlnext(tiki_base_url, html, 'tiki');
                         });

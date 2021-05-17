@@ -12,7 +12,11 @@ const lazada_base_url = "https://lazada.vn";
     const productName = $('h1.pdp-mod-product-badge-title').text();
     const productPrice = $('span.pdp-price_type_normal').text();
     const trademark = $('a.pdp-product-brand__brand-link').text();
+    let imageLink = $('img.pdp-mod-common-image').attr('src');
 
+    if(!imageLink.includes("https:")) {
+        imageLink = "https:" + imageLink;
+    }
 
     if(!string_helper.isEmpty(productName)) {
         if(!(await isExist.isExist(link))) {
@@ -21,9 +25,10 @@ const lazada_base_url = "https://lazada.vn";
                 current_price: productPrice.match(/\d/g).join(''),
                 brand: trademark,
                 link: link,
-                from: "lazada"
+                from: "lazada",
+                image: imageLink
             };
-            saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from ).then(async () => {
+            saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
                 const crawler = require('../crawl/get_link');
                 await crawler.crawlnext(lazada_base_url, html, 'lazada');
             });
@@ -43,9 +48,10 @@ const lazada_base_url = "https://lazada.vn";
                             current_price: productPrice.match(/\d/g).join(''),
                             brand: trademark,
                             link: link,
-                            from: "lazada"
+                            from: "lazada",
+                            image: imageLink
                         };
-                        saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from ).then(async () => {
+                        saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
                             const crawler = require('../crawl/get_link');
                             await crawler.crawlnext(lazada_base_url, html, 'lazada');
                         });
