@@ -20,13 +20,15 @@ const getProductInfo = async (html, link) => {
         }
     });
 
-    const firstIndex = imageLink.indexOf("&quot;");
-    const lastIndex = imageLink.lastIndexOf("&quot;");
-    imageLink = imageLink.substring(
-        firstIndex + 6, 
-        lastIndex
-    );
-    
+    if(imageLink != undefined && imageLink != null) {
+        const firstIndex = imageLink.indexOf("&quot;");
+        const lastIndex = imageLink.lastIndexOf("&quot;");
+        imageLink = imageLink.substring(
+            firstIndex + 6, 
+            lastIndex
+        );
+    }
+
     if(!string_helper.isEmpty(productPrice)) {
         if(!(await isExist.isExist(link))) {
             const object = {
