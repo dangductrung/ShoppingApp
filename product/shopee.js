@@ -6,7 +6,7 @@ var Product = require("../model/product");
 
 const shopee_base_url = "https://shopee.vn";
 
-const getProductInfo = async (html, link) => {
+const getProductInfo = async (html, link, isCrawlNext) => {
     const $ =  cheerio.load(html);
 
     const productName = $('div.attM6y > span').text();
@@ -40,8 +40,10 @@ const getProductInfo = async (html, link) => {
                 image: imageLink
             };
             saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
-                const crawler = require('../crawl/get_link');
-                await crawler.crawlnext(shopee_base_url, html, 'shopee');
+                if(isCrawlNext != false){
+                    const crawler = require('../crawl/get_link');
+                    await crawler.crawlnext(shopee_base_url, html, 'shopee');
+                }
             });
             return;
         } else {
@@ -63,8 +65,10 @@ const getProductInfo = async (html, link) => {
                             image: imageLink
                         };
                         saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
-                            const crawler = require('../crawl/get_link');
-                            await crawler.crawlnext(shopee_base_url, html, 'shopee');
+                            if(isCrawlNext != false){
+                                const crawler = require('../crawl/get_link');
+                                await crawler.crawlnext(shopee_base_url, html, 'shopee');
+                            }
                         });
                         return;
                     }
@@ -72,8 +76,10 @@ const getProductInfo = async (html, link) => {
             });
         }
     } else {
-        const crawler = require('../crawl/get_link');
-        await crawler.crawlnext(shopee_base_url, html, 'shopee');
+        if(isCrawlNext != false){
+            const crawler = require('../crawl/get_link');
+            await crawler.crawlnext(shopee_base_url, html, 'shopee');
+        }
     }
 };
 

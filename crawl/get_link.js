@@ -48,7 +48,7 @@ function sleep(ms) {
 }
 
 // function get page content
-const getPageContent = async(uri, type) => {
+const getPageContent = async(uri, type, isCrawlNext) => {
     var uri_links = [];
     if(Array.isArray(uri)) {
         for(i = 0; i<uri.length; ++i) {
@@ -68,17 +68,17 @@ const getPageContent = async(uri, type) => {
         for(index = 0;index<uri_links.length; ++index) {
             let link = uri_links[index].replace(' ', "%");
             exportFile(type + ".txt", link);
-            await openBrowser(type,link);
+            await openBrowser(type,link, isCrawlNext);
         }
         return;
     } catch(e) {
         // console.log("Puppeteer error: " , e);
-        getPageContent(uri, type);
+        getPageContent(uri, type, isCrawlNext);
     }
     return null;
 };
 
-const openBrowser = async (type, link) => {
+const openBrowser = async (type, link, isCrawlNext) => {
     const browser = await puppeteer.launch({
         // headless: false,
         ignoreHTTPSErrors: true,
@@ -114,24 +114,24 @@ const openBrowser = async (type, link) => {
         let content = await page.evaluate(() => document.querySelector('*').outerHTML);
         await page.close();
         await browser.close();
-        await solveContent(content, type, link);
+        await solveContent(content, type, link, isCrawlNext);
     }catch(err) {
         console.log("Puppeteer error: " , err);
         //shell.exec('sudo pkill -9 chrome');
     await browser.close();
-        await openBrowser(type, link);
+        await openBrowser(type, link, isCrawlNext);
     }finally {
         await browser.close();
     }
 }
 
-const solveContent = async (content,type, link) => {
+const solveContent = async (content,type, link, isCrawlNext) => {
     if(type === "shopee") {
-        await shopee.getProductInfo(content, link);
+        await shopee.getProductInfo(content, link, isCrawlNext);
     } else if(type === "lazada") {
-        await lazada.getProductInfo(content, link);
+        await lazada.getProductInfo(content, link, isCrawlNext);
     } else if(type === "tiki") {
-        await tiki.getProductInfo(content, link);
+        await tiki.getProductInfo(content, link, isCrawlNext);
     }
     return;
 };

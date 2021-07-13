@@ -6,7 +6,7 @@ var Product = require("../model/product");
 
 const lazada_base_url = "https://lazada.vn";
 
- const getProductInfo = async (html, link) => {
+ const getProductInfo = async (html, link, isCrawlNext) => {
     const $ = cheerio.load(html);
 
     const productName = $('h1.pdp-mod-product-badge-title').text();
@@ -29,8 +29,10 @@ const lazada_base_url = "https://lazada.vn";
                 image: imageLink
             };
             saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
-                const crawler = require('../crawl/get_link');
-                await crawler.crawlnext(lazada_base_url, html, 'lazada');
+                if(isCrawlNext != false){
+                    const crawler = require('../crawl/get_link');
+                    await crawler.crawlnext(lazada_base_url, html, 'lazada');
+                }
             });
             return;
         } else {
@@ -52,8 +54,10 @@ const lazada_base_url = "https://lazada.vn";
                             image: imageLink
                         };
                         saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
-                            const crawler = require('../crawl/get_link');
-                            await crawler.crawlnext(lazada_base_url, html, 'lazada');
+                            if(isCrawlNext != false){
+                                const crawler = require('../crawl/get_link');
+                                await crawler.crawlnext(lazada_base_url, html, 'lazada');
+                            }
                         });
                         return;
                     }
@@ -61,8 +65,10 @@ const lazada_base_url = "https://lazada.vn";
             });
         }
     } else {
-        const crawler = require('../crawl/get_link');
-        await crawler.crawlnext(lazada_base_url, html, 'lazada');
+        if(isCrawlNext != false){
+            const crawler = require('../crawl/get_link');
+            await crawler.crawlnext(lazada_base_url, html, 'lazada');
+        }
     }
 };
 

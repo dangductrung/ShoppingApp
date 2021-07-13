@@ -6,7 +6,7 @@ var Product = require("../model/product");
 
 const tiki_base_url = "https://tiki.vn";
 
-const getProductInfo = async (html, link) => {
+const getProductInfo = async (html, link, isCrawlNext) => {
     const $ = cheerio.load(html);
 
     const productName = $('h1.title').text();
@@ -34,8 +34,10 @@ const getProductInfo = async (html, link) => {
                 image: imageLink
             };
             saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
-                const crawler = require('../crawl/get_link');
-                await crawler.crawlnext(tiki_base_url, html, 'tiki');
+                if(isCrawlNext != false) {
+                    const crawler = require('../crawl/get_link');
+                    await crawler.crawlnext(tiki_base_url, html, 'tiki');
+                }
             });
             return;
 
@@ -58,8 +60,10 @@ const getProductInfo = async (html, link) => {
                             image: imageLink
                         };
                         saveProduct.saveProduct(object.name, object.current_price, object.brand, object.link, object.from, object.image ).then(async () => {
-                            const crawler = require('../crawl/get_link');
-                            await crawler.crawlnext(tiki_base_url, html, 'tiki');
+                            if(isCrawlNext != false) {
+                                const crawler = require('../crawl/get_link');
+                                await crawler.crawlnext(tiki_base_url, html, 'tiki');
+                            }
                         });
                         return;
                     }
@@ -67,8 +71,10 @@ const getProductInfo = async (html, link) => {
             });
         }
     } else {
-        const crawler = require('../crawl/get_link');
-        await crawler.crawlnext(tiki_base_url, html, 'tiki');
+        if(isCrawlNext != false) {
+            const crawler = require('../crawl/get_link');
+            await crawler.crawlnext(tiki_base_url, html, 'tiki');
+        }
     }
 };
 

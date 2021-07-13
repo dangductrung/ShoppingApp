@@ -5,7 +5,7 @@ const Product = require('../model/product');
 const crawl = async () => {
     const products = await Product.findAll();
     for(i = 0;i<products.length ; ++i) {
-        await crawler.getPageContent(products[i].link, products[i].from);
+        await crawler.getPageContent(products[i].link, products[i].from, false);
     }
 };
 
