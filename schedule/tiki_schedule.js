@@ -23,7 +23,7 @@ const crawl = async () => {
     //         console.log(e);
     //       }
     //   });  
-};
 
+};
 
 module.exports = { crawl }

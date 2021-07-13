@@ -48,10 +48,10 @@ const getProductInfo = async (html, link) => {
                 order: [ [ 'created_at', 'DESC' ]]
             }).then(async function(entities) {
                 if(entities.length > 0) {
-                    if('' + entities[0].current_price !==  productPrice.match(/\d/g).join('')) {
+                    if('' + entities[0].current_price !==  currentPrice.match(/\d/g).join('')) {
                         const object = {
                             name: productName,
-                            current_price: productPrice.match(/\d/g).join(''),
+                            current_price: currentPrice.match(/\d/g).join(''),
                             brand: trademark,
                             link: link,
                             from: "tiki",

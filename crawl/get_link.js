@@ -92,16 +92,14 @@ const openBrowser = async (type, link) => {
         '--disable-dev-shm-usage',
         '--disable-gpu'],
         defaultViewport: null,
-        read_timeout: 60000,
         handleSIGINT : false,
-        timeout: 30000,
         userDataDir: '${__dirname}/profile-dir'
     });
 
     try {
         const page = await browser.newPage();
-        await page.setDefaultNavigationTimeout(0);
-        await page.goto(link, { waitUntil: 'networkidle0' , timeout: 30000});
+        await page.setDefaultNavigationTimeout(50000);
+        await page.goto(link, { waitUntil: 'networkidle0'});
         
         page.on('pageerror',async (err) => {
             await browser.close();
@@ -119,7 +117,8 @@ const openBrowser = async (type, link) => {
         await solveContent(content, type, link);
     }catch(err) {
         console.log("Puppeteer error: " , err);
-        shell.exec('pkill Chromium');
+        //shell.exec('sudo pkill -9 chrome');
+    await browser.close();
         await openBrowser(type, link);
     }finally {
         await browser.close();
@@ -157,6 +156,7 @@ const filterLink = (base_url, links, type) => {
             link.includes("login") || link.includes(":") || link.includes("#") ||
             link.includes("cart") || link.includes("about") || 
             link.includes("notification") || link.includes("searchbox") || 
+            link.includes("header_tiki") || link.includes("desktop_header") || link.includes("deal-hot?tab=now") || 
             link.includes("logout") || link == null || isLinkCrawled(type + ".txt", link) || link.includes('tka.tiki.vn') || link.includes("bit.ly") ||
             link.includes("register")) {
             delete links[_index];
