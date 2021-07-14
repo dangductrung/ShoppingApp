@@ -178,7 +178,7 @@ const filterLink = (base_url, links, type) => {
         }
 
         if(!isLinkCrawled(type + ".txt", temp)) {
-            temp = temp.replace(" ", "%");
+            temp = temp.replace(" ", "%20");
             links[_index] = temp;
         } else {
             delete links[_index];
