@@ -12,9 +12,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const port = process.env.PORT || 5000
 
-app.use('/crawl', require('./routes/crawl'));
-
-
 var server=app.listen(4000, function(){
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
   });
