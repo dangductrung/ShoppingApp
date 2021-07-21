@@ -6,7 +6,7 @@ const schedule = require('../schedule/check_current_prd_schedule');
 
 require('events').EventEmitter.prototype._maxListeners = 100;
 
-const enviromentName = "LAZADA_CRAWL"
+const enviromentName = "check_current_prd_schedule"
 app.use(morgan(enviromentName));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

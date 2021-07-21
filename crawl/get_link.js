@@ -5,7 +5,6 @@ const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha');
 const fs = require('fs');
 const shopee = require('../product/shopee');
 const tiki = require('../product/tiki');
-const lazada = require('../product/lazada');
 const isExist = require('../func/is_exist');
 var shell = require('shelljs');
 
@@ -128,8 +127,6 @@ const openBrowser = async (type, link, isCrawlNext) => {
 const solveContent = async (content,type, link, isCrawlNext) => {
     if(type === "shopee") {
         await shopee.getProductInfo(content, link, isCrawlNext);
-    } else if(type === "lazada") {
-        await lazada.getProductInfo(content, link, isCrawlNext);
     } else if(type === "tiki") {
         await tiki.getProductInfo(content, link, isCrawlNext);
     }
