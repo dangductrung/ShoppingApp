@@ -3,8 +3,13 @@ const string_helper = require('../helper/string_helper');
 const dateFormat = require('dateformat');
 
  const saveProduct = async (name,current_price,brand,link,from, imageLink ) => {
-    let linkArr = link.split("?");
-    let linkRes = linkArr.slice(0, linkArr.length - 1).join("");
+    let finalLink = link;
+    if(finalLink.includes("?")) {
+        let linkArr = link.split("?");
+        let linkRes = linkArr.slice(0, linkArr.length - 1).join("");
+        finalLink = linkRes;
+    }
+
 
     var dateNow = new Date()
     .toLocaleString("sv", { timeZone: "Asia/Ho_Chi_Minh" });
@@ -13,7 +18,7 @@ const dateFormat = require('dateformat');
             name: name,
             brand: brand,
             from: from,
-            link: linkRes,
+            link: finalLink,
             current_price: current_price,
             created_at: dateFormat(dateNow, 'yyyy-mm-dd HH:MM:ss'),
             image: imageLink
