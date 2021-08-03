@@ -21,7 +21,7 @@ const getProductInfo = async (html, link, isCrawlNext) => {
     });
 
     const currentPrice = !string_helper.isEmpty(productPrice) ? productPrice : flashSalePrice;
-    const imageLink = $('div.CFwPI > img').attr('src');
+    const imageLink = $('img.fWjUGo').attr('src');
 
     if(!string_helper.isEmpty(currentPrice)) {
         if(!(await isExist.isExist(link))) {

@@ -10,6 +10,10 @@ const dateFormat = require('dateformat');
         finalLink = linkRes;
     }
 
+    if(imageLink == undefined) {
+        console.log("IMAGE IS EMPTY");
+        return;
+    }
 
     var dateNow = new Date()
     .toLocaleString("sv", { timeZone: "Asia/Ho_Chi_Minh" });
