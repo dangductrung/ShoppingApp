@@ -15,7 +15,8 @@ var Product = sequilize.define('products', {
     match_id: DataTypes.INTEGER ,
     created_at: DataTypes.DATE ,
     current_price: DataTypes.FLOAT,
-    image: DataTypes.STRING(1500)
+    image: DataTypes.STRING(1500),
+    delta: DataTypes.FLOAT,
 },  {
     charset: 'utf8mb4',
     timestamps: false,
