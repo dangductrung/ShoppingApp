@@ -4,8 +4,7 @@ const Product = require('../model/product');
 
 const crawl = async () => {
     const rule = new schedule.RecurrenceRule();
-    // Sunday &  Wednesday
-    rule.dayOfWeek = [0, 3];
+    rule.dayOfWeek = [0,1,2,3,4,5,6];
     rule.hour = 0;
     rule.minute = 0;
 
@@ -15,9 +14,9 @@ const crawl = async () => {
             for(i = 0;i<products.length ; ++i) {
                 await crawler.getPageContent(products[i].link, products[i].from, false);
             }
-          } catch(e) {
+        } catch(e) {
             console.log(e);
-          }
+        }
     }); 
 };
 
